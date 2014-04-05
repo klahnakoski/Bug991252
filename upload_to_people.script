@@ -1,0 +1,5 @@
+option transfer binary
+option synchdelete off
+option confirm off
+option batch on
+put -nopreservetime current_time.js /home/klahnakoski/public_html/Bug991252/
