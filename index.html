@@ -12,12 +12,15 @@
 			$("body").html("<h1>Time from loaded script is: " + new Date(current_time) + "</h1>");
 		}//method
 
+		var frag = document.createDocumentFragment();
 		var script = document.createElement('script');
 		script.type = 'text/javascript';
 		script.onload = showTime;
 		script.async = false;
 		script.src = "current_time.js";
-		document.getElementsByTagName('head')[0].appendChild(script);
+		frag.appendChild(script);
+
+		document.getElementsByTagName('head')[0].appendChild(frag);
 	});//method
 </script>
 
