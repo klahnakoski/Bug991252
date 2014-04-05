@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Bug991252 - Dynamic Reload Test</title>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+<body>
+
+<script type="application/javascript">
+	$(document).ready(function () {
+		function showTime() {
+			$("body").html("<h1>Time from loaded script is: " + new Date(current_time) + "</h1>");
+		}//method
+
+		var script = document.createElement('script');
+		script.type = 'text/javascript';
+		script.onload = showTime;
+		script.async = false;
+		script.src = "current_time.js";
+		document.getElementsByTagName('head')[0].appendChild(script);
+	});//method
+</script>
+
+</body>
+</html>
