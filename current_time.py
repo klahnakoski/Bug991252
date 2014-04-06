@@ -12,4 +12,4 @@ def random_string(length):
     return "".join(result)
 
 with open("current_time.js", "w") as f:
-    f.write("var current_time="+str(millis)+";\nvar a=\""+(random_string(1000000))+"\";")
+    f.write("var current_time="+str(millis)+";\nvar a=\""+(random_string(2**21))+"\";")
