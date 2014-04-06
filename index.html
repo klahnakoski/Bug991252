@@ -8,19 +8,99 @@
 
 <script type="application/javascript">
 	$(document).ready(function () {
+		var current_time;
+
+
 		function showTime() {
 			$("body").html("<h1>Time from loaded script is: " + new Date(current_time) + "</h1>");
 		}//method
 
-		var frag = document.createDocumentFragment();
-		var script = document.createElement('script');
-		script.type = 'text/javascript';
-		script.onload = showTime;
-		script.async = false;
-		script.src = "subdir/current_time.js";
-		frag.appendChild(script);
 
-		document.getElementsByTagName('head')[0].appendChild(frag);
+		function readfile(filename, callback){
+			var request = new XMLHttpRequest();
+			try {
+				var url = "http://people.mozilla.org/~klahnakoski/Bug991252/subdir/"+filename;
+				request.open('GET', url);
+				request.isDone = false;
+				request.onreadystatechange = function () {
+					if (request.readyState == 4) {
+						if (request.status == 200 || request.status == 0) {
+							if (request.isDone) return;
+							request.isDone = true;
+							callback(request.responseText);
+						}//endif
+					}//endif
+				};
+				request.onload = function () {
+					if (request.status == 200 || request.status == 0) {
+						if (request.isDone) return;
+						request.isDone = true;
+						callback(request.responseText);
+					}//endif
+				};
+				request.send(null);
+			} catch (e) {
+				callback(null);
+			}//try
+		}//function
+
+		var frag = document.createDocumentFragment();
+
+		var pendingPreLoad=0;
+		function startAddPreLoad(){
+			pendingPreLoad++;
+		}//endif
+		function doneAddingPreLoad(){
+			pendingPreLoad--;
+			if (pendingPreLoad==0){
+				var head=document.getElementsByTagName('head')[0];
+				head.appendChild(frag);
+			}//endif
+		}//endif
+
+
+
+
+		var pendingHead=0;
+		function startAddToHead(){
+			pendingHead++;
+		}//endif
+		function doneAddingToHead(){
+			pendingHead--;
+			if (pendingHead==0){
+				showTime()
+			}//endif
+		}//endif
+
+		//JUST ONE FILE IS NOT ENOUGH, HERE IS A 100 DISTRACTIONS
+		for(var i=0;i<100;i++){
+			startAddPreLoad();
+			startAddToHead();
+			(function(i){
+				readfile(i+".js", function(content){
+					var script = document.createElement('script');
+					script.type = 'text/javascript';
+					script.onload = doneAddingToHead;
+					script.async = false;
+					script.src = "subdir/"+i+".js";
+					frag.appendChild(script);
+					doneAddingPreLoad();
+				});
+			})(i);
+		}//for
+
+		startAddPreLoad();
+		startAddToHead();
+		readfile("current_time.js", function(content){
+			var script = document.createElement('script');
+			script.type = 'text/javascript';
+			script.onload = doneAddingToHead;
+			script.async = false;
+			script.src = "subdir/current_time.js";
+			frag.appendChild(script);
+			doneAddingPreLoad();
+		});
+
 	});//method
 </script>
 
